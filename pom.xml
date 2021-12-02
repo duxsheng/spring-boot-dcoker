@@ -17,8 +17,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <docker.image.prefix>aliyun</docker.image.prefix>
-        <docker.repository>qiye.aliyun.com/alimail/auth/</docker.repository>
+        <docker.image.prefix>demo</docker.image.prefix>
+        <docker.repository>192.168.220.131</docker.repository>
     </properties>
 
     <dependencies>
@@ -40,9 +40,32 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!--引入maven打包docker-->
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.12</version>
+                <executions>
+                    <execution>
+                        <!--如果package不想用docker打包，注释掉这个goals-->
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                            <goal>tag</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--docker镜像名-->
+                    <repository>${docker.repository}/${docker.image.prefix}/${artifactId}</repository>
+                    <dockerfile>${project.basedir}/src/main/docker/Dockerfile</dockerfile>
+                    <!--对应docker中的tag-->
+                    <tag>${version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
             </plugin>
         </plugins>
     </build>
